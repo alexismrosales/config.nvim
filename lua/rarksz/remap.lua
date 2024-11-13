@@ -7,7 +7,9 @@ vim.g.maplocalleader = " "
 vim.keymap.set("n", "<c-s>", ":w<CR>")
 
 -- Set <leader>e to open explorer
-vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>e", function()
+	vim.cmd("ToggleNetrw")
+end, { noremap = true })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
