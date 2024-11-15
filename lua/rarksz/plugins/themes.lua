@@ -7,12 +7,31 @@ end
 return {
 	{
 		"catppuccin/nvim",
+		dependencies = {
+			"nvim-lualine/lualine.nvim",
+		},
 		name = "catppuccin",
 		priority = 1000,
 		config = function()
 			require("catppuccin").setup({
 				flavour = "mocha",
 				transparent_background = false,
+				integrations = {
+					mason = true,
+					treesitter = true,
+					dashboard = true,
+					beacon = true,
+					harpoon = true,
+					cmp = true,
+					telescope = {
+						enabled = true,
+						style = "nvchad",
+					},
+					lsp_trouble = true,
+					native_lsp = {
+						enabled = true,
+					},
+				},
 				dim_inactive = {
 					enabled = false, -- dims the background color of inactive window
 					shade = "dark",

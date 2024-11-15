@@ -9,6 +9,7 @@ return {
 		"hrsh7th/cmp-cmdline",
 		"hrsh7th/nvim-cmp",
 		"L3MON4D3/LuaSnip",
+		"windwp/nvim-autopairs",
 		"saadparwaiz1/cmp_luasnip",
 		"j-hui/fidget.nvim",
 	},
@@ -16,6 +17,9 @@ return {
 	config = function()
 		local cmp = require("cmp")
 		local cmp_lsp = require("cmp_nvim_lsp")
+		local mason_lspconfig = require("mason-lspconfig")
+		local lspconfig = require("lspconfig")
+		local npairs = require("nvim-autopairs")
 		local capabilities = vim.tbl_deep_extend(
 			"force",
 			{},
@@ -24,6 +28,7 @@ return {
 		)
 
 		require("fidget").setup({})
+		-- Mason installations
 		require("mason").setup({
 			opts = {
 				ensure_installed = {
@@ -34,11 +39,14 @@ return {
 				},
 			},
 		})
+		-- Lsp config just add your new lsp
 		require("mason-lspconfig").setup({
 			ensure_installed = {
 				"lua_ls",
 				"ts_ls",
 				"gopls",
+				"tailwindcss",
+				"cssls",
 			},
 			handlers = {
 				function(server_name) -- default handler (optional)
@@ -47,7 +55,6 @@ return {
 					})
 				end,
 				["lua_ls"] = function()
-					local lspconfig = require("lspconfig")
 					lspconfig.lua_ls.setup({
 						capabilities = capabilities,
 						settings = {
@@ -61,7 +68,6 @@ return {
 					})
 				end,
 				["ts_ls"] = function()
-					local lspconfig = require("lspconfig")
 					lspconfig.ts_ls.setup({
 						capabilities = capabilities,
 						init_options = {
@@ -71,12 +77,74 @@ return {
 						},
 					})
 				end,
+				["cssls"] = function()
+					lspconfig.cssls.setup({
+						capabilities = capabilities,
+						settings = {
+							css = {
+								validate = true,
+								lint = {
+									unknownAtRules = "ignore", -- Ignore warnings
+								},
+							},
+							scss = { validate = true },
+							less = { validate = true },
+						},
+						on_attach = function(client, _)
+							-- Disable autoformatting
+							client.server_capabilities.documentFormattingProvider = false
+						end,
+					})
+				end,
+				["tailwindcss"] = function()
+					lspconfig.tailwindcss.setup({
+						capabilities = capabilities,
+						filetypes = {
+							"html",
+							"css",
+							"javascript",
+							"javascriptreact",
+							"typescript",
+							"typescriptreact",
+						},
+						root_dir = lspconfig.util.root_pattern(
+							"tailwind.config.js",
+							"tailwind.config.ts",
+							"postcss.config.js",
+							"package.json"
+						),
+						on_attach = function(client, _)
+							-- Disable autoformatting
+							client.server_capabilities.documentFormattingProvider = false
+						end,
+					})
+				end,
 			},
 		})
 
-		local cmp_select = { behavior = cmp.SelectBehavior.Select }
+		-- Functions with commands to go to code
+		local on_attach = function(_, buffr)
+			local opts = { noremap = true, silent = true, buffer = buffr }
+			vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+			vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+			vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+		end
 
+		mason_lspconfig.setup_handlers({
+			function(server)
+				lspconfig[server].setup({
+					on_attach = on_attach,
+				})
+			end,
+		})
+
+		local cmp_select = { behavior = cmp.SelectBehavior.Select }
+		-- cmp config
 		cmp.setup({
+			--
+
+			-- Completion popup
 			window = {
 				completion = {
 					border = "rounded",
@@ -124,6 +192,7 @@ return {
 			}),
 		})
 
+		-- Message with info when a diagnostic pop up
 		vim.api.nvim_create_autocmd("CursorHold", {
 			callback = function()
 				vim.diagnostic.open_float(nil, {
@@ -136,5 +205,12 @@ return {
 				})
 			end,
 		})
+		-- Bracket completion
+		npairs.setup({
+			disable_filetype = { "TelescopePrompt", "vim" },
+			check_ts = true,
+		})
+		local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+		cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 	end,
 }
