@@ -13,6 +13,8 @@ return {
 				enter_on_sendcmd = true,
 			},
 		})
+		vim.api.nvim_set_hl(0, "HarpoonWindow", { link = "Normal" })
+		vim.api.nvim_set_hl(0, "HarpoonBorder", { link = "Normal" })
 		-- REQUIRED
 
 		vim.keymap.set("n", "<leader>a", function()

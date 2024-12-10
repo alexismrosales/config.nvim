@@ -1,4 +1,4 @@
-local selectedTheme = "catppuccin-mocha"
+local selectedTheme = "cyberdream"
 
 function ThemeColor()
 	vim.cmd.colorscheme(selectedTheme)
@@ -43,6 +43,27 @@ return {
 			vim.api.nvim_set_hl(0, "StatusLine", { bg = "#1e1e2f", fg = "#cdd6f5" })
 			vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "#1e1e2f", fg = "#626880" })
 			vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#1e1e2f", fg = "#cdd6f5" })
+		end,
+	},
+	{
+		"scottmckendry/cyberdream.nvim",
+		lazy = false,
+		priority = 1000,
+		terminal_colors = true,
+		config = function()
+			require("cyberdream").setup({
+				-- Enable transparent background
+				transparent = true,
+				borderless_telescope = false,
+				extensions = {
+					telescope = false,
+					trouble = true,
+					markdown = false,
+					lazy = false,
+					treesitter = false,
+					treesittercontext = false,
+				},
+			})
 		end,
 	},
 }
