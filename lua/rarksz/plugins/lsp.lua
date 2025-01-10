@@ -6,7 +6,8 @@ local lsp_servers = {
     'gopls',
     'nil_ls',
     'bashls',
-    'intelephense'
+    'intelephense',
+    'ccls'
 }
 
 local function on_attach_global(_, bufnr)
@@ -100,6 +101,40 @@ local function php_config(lspconfig, capabilities)
     return {
         root_dir = lspconfig.util.root_pattern("composer.json", ".git", "index.php", "init.php", "vendor"),
         capabilities = capabilities,
+    }
+end
+
+local function ccls_config(capabilities)
+    -- Detect a dynamic detection of .h files including .hpp
+    local function detect_include_dirs()
+        local handle = io.popen("find . -type d -name include")
+        local result = handle:read("*a")
+        handle:close()
+
+        local include_dirs = {}
+        for line in result:gmatch("[^\r\n]+") do
+            table.insert(include_dirs, "-I" .. vim.fn.expand(line))
+        end
+        return include_dirs
+    end
+    local include_dirs = detect_include_dirs()
+    return {
+        capabilities = capabilities,
+        init_options = {
+            cache = {
+                directory = ".ccls-cache",
+            },
+            clang = {
+                extraArgs = include_dirs,
+                resourceDir = "",
+            },
+        },
+        filetypes = {
+            "c",
+            "cpp",
+            "objc",
+            "objcpp",
+        }
     }
 end
 local diagnostics_config = {
@@ -217,6 +252,7 @@ return {
         lsp.configure('nil_ls', nil_config(capabilities))
         lsp.configure('bashls', bashls_config(capabilities))
         lsp.configure('intelephense', php_config(lspconfig, capabilities))
+        lsp.configure('ccls', ccls_config(capabilities))
         lsp.setup_servers(lsp_servers)
         lsp.on_attach(on_attach_global)
         lsp.setup()
