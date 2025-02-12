@@ -107,7 +107,8 @@ end
 local function ccls_config(capabilities)
     -- Detect a dynamic detection of .h files including .hpp
     local function detect_include_dirs()
-        local handle = io.popen("find . -type d -name include")
+        -- Searching for headers in dir "include" and "ext"
+        local handle = io.popen("find . -type d \\( -name include -o -name ext \\)")
         local result = handle:read("*a")
         handle:close()
 
@@ -137,6 +138,7 @@ local function ccls_config(capabilities)
         }
     }
 end
+
 local diagnostics_config = {
     -- omitted for brevity
 }
