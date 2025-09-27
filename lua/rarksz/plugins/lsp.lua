@@ -32,7 +32,7 @@ local lua_ls_config = {
 
 local function ts_ls_config(capabilities)
     return {
-        capabilites = capabilities,
+        capabilities = capabilities,
         init_options = {
             preferences = {
                 disableSuggestions = true,
@@ -203,6 +203,13 @@ return {
                 { name = "buffer" },
                 { name = "path" },
             }),
+        })
+        cmp.setup.cmdline(':', {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = cmp.config.sources({
+            { name = 'cmdline' },
+            { name = 'path' },
+          })
         })
         -- Message with info when a diagnostic pop up
         vim.api.nvim_create_autocmd("CursorHold", {

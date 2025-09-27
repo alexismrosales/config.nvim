@@ -8,14 +8,21 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			python = { "isort", "black" },
-			javascript = { "deno_fmt" },
-			typescript = { "deno_fmt" },
-			javascriptreact = { "deno_fmt " },
-			typescriptreact = { "deno_fmt " },
+			javascript = { "prettier" },
+			typescript = { "prettier" },
+			javascriptreact = { "prettier" },
+			typescriptreact = { "prettier" },
+
+			json = { "prettier" },
+			yaml = { "prettier" },
+			markdown = { "prettier" },
+			html = { "prettier" },
+			css = { "prettier" },
+			scss = { "prettier" },
 			go = { "go_imports", "go_lines" },
 		},
 		-- Set up format-on-save
-		format_on_save = { timeout_ms = 500, async = false, lsp_fallback = true },
+		format_on_save = { timeout_ms = 5000, async = false, lsp_fallback = true },
 		-- Customize formatters
 		formatters = {
 			shfmt = {

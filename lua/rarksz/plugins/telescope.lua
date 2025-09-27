@@ -14,6 +14,11 @@ return {
 				defaults = {
 					initial_mode = "normal",
 				},
+        extensions = {
+          file_browser = {
+            previewer = true
+          }
+        }
 			})
 			local builtin = require("telescope.builtin")
 			vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[f]ind a new [f]ile" })

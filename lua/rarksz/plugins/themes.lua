@@ -54,7 +54,7 @@ return {
 			require("cyberdream").setup({
 				-- Enable transparent background
 				transparent = true,
-				borderless_telescope = false,
+				borderless_picker = false,
 				extensions = {
 					telescope = false,
 					trouble = true,
